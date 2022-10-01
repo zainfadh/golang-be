@@ -20,6 +20,7 @@ type (
 		UpdateItem(item models.Item) response.Response
 		List(data models.Item) ([]models.Item, error)
 		Delete(ID int) response.Response
+		GetItemById(id int) (models.Item, error)
 	}
 )
 
@@ -38,6 +39,7 @@ func (u *itemRepository) SaveItem(item models.Item) response.Response {
 	if r := db.Save(&item); r.Error != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	res.ResponseCode = constants.ERROR_RC_200
@@ -56,13 +58,14 @@ func (u *itemRepository) UpdateItem(item models.Item) response.Response {
 	if err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	items.Name = item.Name
 	items.Description = item.Description
 	items.Cost = item.Cost
 	items.Price = item.Cost
-	item.LastUpdate = time.Now()
+	item.UpdatedAt = time.Now()
 	item.CreatedAt = time.Now()
 
 	res.ResponseCode = constants.ERROR_RC_200
@@ -90,6 +93,7 @@ func (u *itemRepository) Delete(ID int) response.Response {
 	if err := db.Where("id = ?", ID).Delete(data).Error; err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	if ID == 0 {
@@ -102,4 +106,17 @@ func (u *itemRepository) Delete(ID int) response.Response {
 	res.ResponseDesc = constants.ERROR_RM_200
 
 	return res
+}
+
+// GetItemById ..
+func (u *itemRepository) GetItemById(id int) (models.Item, error) {
+	db := u.DB.Debug()
+	item := models.Item{}
+
+	err := db.Where("id=?", id).Find(&item).Error
+	if err != nil {
+		return item, err
+	}
+
+	return item, nil
 }

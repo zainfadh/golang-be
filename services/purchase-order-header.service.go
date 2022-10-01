@@ -31,18 +31,25 @@ func NewPoHeaderService(db *gorm.DB) *poHeaderService {
 
 // SavePoHeader ...
 func (u *poHeaderService) SavePoHeader(poHeader *models.PurchaseOrderHeader) response.Response {
-	// poHeader.LastUpdate = time.Now()
-	// brand.LastUpdateBy = dto.CurrPoHeader
 
-	res := u.Repository.SavePoHeader(*poHeader)
+	res := response.Response{}
+
+	_, err := u.Repository.SavePoHeader(*poHeader)
+
+	if err != nil {
+		res.ResponseCode = constants.ERROR_RC_511
+		res.ResponseDesc = constants.ERROR_RM_511
+		return res
+	}
+
+	res.ResponseCode = constants.ERROR_RC_200
+	res.ResponseDesc = constants.ERROR_RM_200
 
 	return res
 }
 
 // UpdatePoHeader ...
 func (u *poHeaderService) UpdatePoHeader(poHeader *models.PurchaseOrderHeader) response.Response {
-	// poHeader.LastUpdate = time.Now()
-	// poHeader.LastUpdateBy = dto.CurrPoHeader
 
 	res := u.Repository.UpdatePoHeader(*poHeader)
 

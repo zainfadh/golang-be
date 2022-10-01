@@ -15,7 +15,7 @@ type (
 	}
 
 	PoDetailRepository interface {
-		SavePoDetail(poDetail models.PurchaseOrderDetail) response.Response
+		SavePoDetail(poDetail models.PurchaseOrderDetail) error
 		UpdatePoDetail(poDetail models.PurchaseOrderDetail) response.Response
 		List(data models.PurchaseOrderDetail) ([]models.PurchaseOrderDetail, error)
 		Delete(ID int) response.Response
@@ -30,18 +30,14 @@ func NewPoDetailRepository(db *gorm.DB) *poDetailRepository {
 }
 
 // SavePoDetail ...
-func (u *poDetailRepository) SavePoDetail(poDetail models.PurchaseOrderDetail) response.Response {
+func (u *poDetailRepository) SavePoDetail(poDetail models.PurchaseOrderDetail) error {
 	db := u.DB.Debug()
-	var res response.Response
 
-	if r := db.Save(&poDetail); r.Error != nil {
-		res.ResponseCode = constants.ERROR_RC_511
-		res.ResponseDesc = constants.ERROR_RM_511
+	if r := db.Save(&poDetail).Error; r != nil {
+		return r
 	}
 
-	res.ResponseCode = constants.ERROR_RC_200
-	res.ResponseDesc = constants.ERROR_RM_200
-	return res
+	return nil
 }
 
 // Update ...
@@ -54,6 +50,7 @@ func (u *poDetailRepository) UpdatePoDetail(poDetail models.PurchaseOrderDetail)
 	if err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	res.ResponseCode = constants.ERROR_RC_200
@@ -81,6 +78,7 @@ func (u *poDetailRepository) Delete(ID int) response.Response {
 	if err := db.Where("id = ?", ID).Delete(data).Error; err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	if ID == 0 {

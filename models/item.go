@@ -8,9 +8,9 @@ type Item struct {
 	Name        string    `json:"name" gorm:"column:item_name"`
 	Description string    `json:"description" gorm:"column:item_description"`
 	Cost        float32   `json:"cost" gorm:"column:item_cost"`
-	Price       float32   `json:"price" gorm:"item_price"`
+	Price       float32   `json:"price" gorm:"column:item_price"`
 	CreatedAt   time.Time `json:"createdAt" gorm:"column:created_at" `
-	LastUpdate  time.Time `json:"lastUpdate" gorm:"column:last_update" `
+	UpdatedAt   time.Time `json:"updatedAt" gorm:"column:updated_at" `
 }
 
 // TableName ...

@@ -33,7 +33,7 @@ func NewItemService(db *gorm.DB) *itemService {
 
 // SaveItem ...
 func (u *itemService) SaveItem(item *models.Item) response.Response {
-	item.LastUpdate = time.Now()
+	item.UpdatedAt = time.Now()
 	// brand.LastUpdateBy = dto.CurrItem
 
 	res := u.Repository.SaveItem(*item)
@@ -43,8 +43,7 @@ func (u *itemService) SaveItem(item *models.Item) response.Response {
 
 // UpdateItem ...
 func (u *itemService) UpdateItem(item *models.Item) response.Response {
-	item.LastUpdate = time.Now()
-	// item.LastUpdateBy = dto.CurrItem
+	item.UpdatedAt = time.Now()
 
 	res := u.Repository.UpdateItem(*item)
 

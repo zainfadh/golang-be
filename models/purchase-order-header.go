@@ -10,7 +10,7 @@ type PurchaseOrderHeader struct {
 	Cost        float32   `json:"cost" gorm:"column:po_cost"`
 	Price       float32   `json:"price" gorm:"column:po_price"`
 	CreatedAt   time.Time `json:"createdAt" gorm:"created_at"`
-	UpdateAt    time.Time `json:"pdateAt" gorm:"update_at"`
+	UpdateAt    time.Time `json:"updateAt" gorm:"update_at"`
 }
 
 // TableName ...

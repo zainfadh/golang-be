@@ -55,6 +55,7 @@ func (u *userRepository) SaveUser(user models.User) response.Response {
 	if r := db.Save(&user); r.Error != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	res.ResponseCode = constants.ERROR_RC_200
@@ -72,6 +73,7 @@ func (u *userRepository) UpdateUser(user models.User) response.Response {
 	if err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	users.Email = user.Email
@@ -105,6 +107,7 @@ func (u *userRepository) Delete(ID int) response.Response {
 	if err := db.Where("id = ?", ID).Delete(data).Error; err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	if ID == 0 {

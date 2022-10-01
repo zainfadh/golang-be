@@ -11,7 +11,10 @@ import (
 
 type (
 	poDetailService struct {
-		Repository repository.PoDetailRepository
+		Repository         repository.PoDetailRepository
+		PoHeaderRepository repository.PoHeaderRepository
+		ItemRepository     repository.ItemRepository
+		DB                 *gorm.DB
 	}
 
 	PoDetailService interface {
@@ -25,14 +28,47 @@ type (
 // NewPoDetailService ...
 func NewPoDetailService(db *gorm.DB) *poDetailService {
 	return &poDetailService{
-		Repository: repository.NewPoDetailRepository(db),
+		Repository:         repository.NewPoDetailRepository(db),
+		PoHeaderRepository: repository.NewPoHeaderRepository(db),
+		ItemRepository:     repository.NewItemRepository(db),
+		DB:                 db,
 	}
 }
 
 // SavePoDetail ...
 func (u *poDetailService) SavePoDetail(poDetail *models.PurchaseOrderDetail) response.Response {
+	var poHeader models.PurchaseOrderHeader
+	var res response.Response
 
-	res := u.Repository.SavePoDetail(*poDetail)
+	item, _ := u.ItemRepository.GetItemById(poDetail.ItemId)
+
+	poDetail.ItemId = item.ID
+
+	// db trx
+	if err := u.DB.Transaction(func(tx *gorm.DB) error {
+
+		// save header >> balikin id yg udah di save & error
+		id, err := u.PoHeaderRepository.SavePoHeader(poHeader)
+		// kondisi error
+		if err != nil {
+			return err
+		}
+
+		// save detail >> error
+		poDetail.PurchaseOrderId = id
+		err = u.Repository.SavePoDetail(*poDetail)
+		// kondisi error
+		if err != nil {
+			return err
+		}
+
+		return nil
+
+	}); err != nil {
+		res.ResponseCode = constants.ERROR_RC_511
+		res.ResponseDesc = constants.ERROR_RM_511
+		return res
+	}
 
 	return res
 }

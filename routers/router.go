@@ -35,7 +35,7 @@ func Server(listenAddress string) (err error) {
 }
 
 func (goRouter *GoRouter) Routers() {
-	db, _ := config.DatabaseOpen()
+	db := config.GetDbCon()
 
 	router := gin.New()
 	router.Use(cors.Default())

@@ -16,10 +16,11 @@ type (
 	}
 
 	PoHeaderRepository interface {
-		SavePoHeader(poHeader models.PurchaseOrderHeader) response.Response
+		SavePoHeader(poHeader models.PurchaseOrderHeader) (int, error)
 		UpdatePoHeader(poHeader models.PurchaseOrderHeader) response.Response
 		List(data models.PurchaseOrderHeader) ([]models.PurchaseOrderHeader, error)
 		Delete(ID int) response.Response
+		GetPOheader(id int) (models.PurchaseOrderHeader, error)
 	}
 )
 
@@ -31,18 +32,14 @@ func NewPoHeaderRepository(db *gorm.DB) *poHeaderRepository {
 }
 
 // SavePoHeader ...
-func (u *poHeaderRepository) SavePoHeader(poHeader models.PurchaseOrderHeader) response.Response {
+func (u *poHeaderRepository) SavePoHeader(poHeader models.PurchaseOrderHeader) (int, error) {
 	db := u.DB.Debug()
-	var res response.Response
 
-	if r := db.Save(&poHeader); r.Error != nil {
-		res.ResponseCode = constants.ERROR_RC_511
-		res.ResponseDesc = constants.ERROR_RM_511
+	if err := db.Save(&poHeader).Error; err != nil {
+		return 0, err
 	}
 
-	res.ResponseCode = constants.ERROR_RC_200
-	res.ResponseDesc = constants.ERROR_RM_200
-	return res
+	return poHeader.ID, nil
 }
 
 // Update ...
@@ -55,6 +52,7 @@ func (u *poHeaderRepository) UpdatePoHeader(poHeader models.PurchaseOrderHeader)
 	if err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
+		return res
 	}
 
 	poHeaders.Description = poHeader.Description
@@ -100,4 +98,17 @@ func (u *poHeaderRepository) Delete(ID int) response.Response {
 	res.ResponseDesc = constants.ERROR_RM_200
 
 	return res
+}
+
+// GetPOheader ..
+func (u *poHeaderRepository) GetPOheader(id int) (models.PurchaseOrderHeader, error) {
+	db := u.DB.Debug()
+	poHeader := models.PurchaseOrderHeader{}
+
+	err := db.Where("id=?", id).Find(&poHeader).Error
+	if err != nil {
+		return poHeader, err
+	}
+
+	return poHeader, nil
 }
