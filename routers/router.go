@@ -41,21 +41,55 @@ func (goRouter *GoRouter) Routers() {
 	router.Use(cors.Default())
 	router.Use(gin.Recovery())
 
-	// bookRepository := repository.InitBookRepository(db)
-	// bookServices := services.InitBookServices(bookRepository)
-	// bookController := controllers.InitBookController(bookServices)
-
-	UserController := controllers.NewAuthController(db)
-
-	// docs.SwaggerInfo.Title = "Golang Template Swagger"
-	// docs.SwaggerInfo.Description = "This is a list of sample api for Golang Template."
-	// docs.SwaggerInfo.Version = "1.0"
-	// docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	// docs.SwaggerInfo.Host = fmt.Sprintf("%s%s", helper.GetEnv("SWAGGER_HOST", "localhost"), helper.GetEnv("SERVER_PORT", ":40001"))
+	AuthController := controllers.NewAuthController(db)
+	UserController := controllers.NewUserController(db)
+	ItemController := controllers.NewItemController(db)
+	POHeaderController := controllers.NewPoHeaderController(db)
+	PODetailController := controllers.NewPoDetailController(db)
 
 	api := router.Group("/api/v1")
 	{
-		api.POST("/login", UserController.Login)
+		login := api.Group("/login")
+		{
+			login.POST("", AuthController.Login)
+		}
+
+		user := api.Group("/user")
+		{
+			user.POST("/", UserController.SaveUser)
+			user.PUT("/", UserController.UpdateUser)
+			user.POST("/id", UserController.GeUserByID)
+			user.POST("/delete", UserController.Delete)
+
+		}
+
+		item := api.Group("/item")
+		{
+			item.POST("/", ItemController.SaveItem)
+			item.PUT("/", ItemController.UpdateItem)
+			item.POST("/id", ItemController.GeItemByID)
+			item.POST("/delete", ItemController.Delete)
+
+		}
+
+		poHeader := api.Group("/po-header")
+		{
+			poHeader.POST("/", POHeaderController.SavePoHeader)
+			poHeader.PUT("/", POHeaderController.UpdatePoHeader)
+			poHeader.POST("/id", POHeaderController.GePoHeaderByID)
+			poHeader.POST("/delete", POHeaderController.Delete)
+
+		}
+
+		poDetail := api.Group("/po-detail")
+		{
+			poDetail.POST("/", PODetailController.SavePoDetail)
+			poDetail.PUT("/", PODetailController.UpdatePoDetail)
+			poDetail.POST("/id", PODetailController.GePoDetailByID)
+			poDetail.POST("/delete", PODetailController.Delete)
+
+		}
+
 	}
 
 	router.NoRoute(func(c *gin.Context) {

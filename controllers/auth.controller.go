@@ -43,7 +43,7 @@ func NewAuthController(db *gorm.DB) *authController {
 // @Router /v9/auth/login [post]
 func (a *authController) Login(c *gin.Context) {
 	req := dto.LoginRequestDto{}
-	res := response.ResponseApi{}
+	res := response.Response{}
 
 	body := c.Request.Body
 	dataBodyReq, _ := ioutil.ReadAll(body)

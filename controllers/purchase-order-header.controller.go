@@ -17,29 +17,29 @@ import (
 )
 
 type (
-	itemController struct {
-		ItemService services.ItemService
+	poHeaderController struct {
+		PoHeaderService services.PoHeaderService
 	}
 
-	ItemController interface {
-		SaveItem(c *gin.Context)
-		UpdateItem(c *gin.Context)
-		GeItemByID(c *gin.Context)
+	PoHeaderController interface {
+		SavePoHeader(c *gin.Context)
+		UpdatePoHeader(c *gin.Context)
+		GePoHeaderByID(c *gin.Context)
 		Delete(c *gin.Context)
 	}
 )
 
-// NewItemController ...
-func NewItemController(db *gorm.DB) *itemController {
-	return &itemController{
-		ItemService: services.NewItemService(db),
+// NewPoHeaderController ...
+func NewPoHeaderController(db *gorm.DB) *poHeaderController {
+	return &poHeaderController{
+		PoHeaderService: services.NewPoHeaderService(db),
 	}
 }
 
-// SaveItem ...
-func (u *itemController) SaveItem(c *gin.Context) {
+// SavePoHeader ...
+func (u *poHeaderController) SavePoHeader(c *gin.Context) {
 
-	req := models.Item{}
+	req := models.PurchaseOrderHeader{}
 	res := response.Response{}
 
 	body := c.Request.Body
@@ -54,13 +54,13 @@ func (u *itemController) SaveItem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, u.ItemService.SaveItem(&req))
+	c.JSON(http.StatusOK, u.PoHeaderService.SavePoHeader(&req))
 	return
 }
 
-// UpdateItem ...
-func (u *itemController) UpdateItem(c *gin.Context) {
-	req := models.Item{}
+// UpdatePoHeader ...
+func (u *poHeaderController) UpdatePoHeader(c *gin.Context) {
+	req := models.PurchaseOrderHeader{}
 	res := response.Response{}
 
 	body := c.Request.Body
@@ -75,12 +75,12 @@ func (u *itemController) UpdateItem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, u.ItemService.UpdateItem(&req))
+	c.JSON(http.StatusOK, u.PoHeaderService.UpdatePoHeader(&req))
 	return
 }
 
-// GeItemByID ...
-func (u *itemController) GeItemByID(c *gin.Context) {
+// GePoHeaderByID ...
+func (u *poHeaderController) GePoHeaderByID(c *gin.Context) {
 	res := response.ResponseApi{}
 	req := dto.GetDataByID{}
 
@@ -96,14 +96,14 @@ func (u *itemController) GeItemByID(c *gin.Context) {
 		return
 	}
 
-	res = u.ItemService.GetItemByID(req.ID)
+	res = u.PoHeaderService.GetPoHeaderByID(req.ID)
 
 	c.JSON(http.StatusOK, res)
 	c.Abort()
 }
 
-func (u *itemController) Delete(c *gin.Context) {
-	req := models.Item{}
+func (u *poHeaderController) Delete(c *gin.Context) {
+	req := models.PurchaseOrderHeader{}
 	res := response.Response{}
 
 	body := c.Request.Body
@@ -116,7 +116,7 @@ func (u *itemController) Delete(c *gin.Context) {
 		return
 	}
 
-	res = u.ItemService.Delete(req.ID)
+	res = u.PoHeaderService.Delete(req.ID)
 
 	c.JSON(http.StatusOK, res)
 	c.Abort()

@@ -23,6 +23,9 @@ type (
 
 	UserController interface {
 		SaveUser(c *gin.Context)
+		UpdateUser(c *gin.Context)
+		GeUserByID(c *gin.Context)
+		Delete(c *gin.Context)
 	}
 )
 

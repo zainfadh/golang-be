@@ -18,11 +18,11 @@ type (
 	}
 
 	UserService interface {
-		AuthLogin(userDto *dto.LoginRequestDto) response.ResponseApi
+		AuthLogin(userDto *dto.LoginRequestDto) response.Response
 		SaveUser(user *models.User) response.Response
 		UpdateUser(user *models.User) response.Response
-		GetUserByID(ID int64) response.ResponseApi
-		Delete(ID int64) response.Response
+		GetUserByID(ID int) response.ResponseApi
+		Delete(ID int) response.Response
 	}
 )
 
@@ -34,10 +34,10 @@ func NewUserService(db *gorm.DB) *userService {
 }
 
 // AuthLogin ...
-func (a *userService) AuthLogin(userDto *dto.LoginRequestDto) response.ResponseApi {
-	var res response.ResponseApi
+func (a *userService) AuthLogin(userDto *dto.LoginRequestDto) response.Response {
+	var res response.Response
 
-	if userDto.Username == "" {
+	if userDto.Email == "" {
 		res.ResponseCode = constants.ERROR_RC_50
 		res.ResponseDesc = constants.ERROR_RM_50
 		return res
@@ -49,7 +49,7 @@ func (a *userService) AuthLogin(userDto *dto.LoginRequestDto) response.ResponseA
 		return res
 	}
 
-	user, err := a.Repository.GetUserByName(userDto.Username)
+	user, err := a.Repository.GetUserByEmail(userDto.Email)
 	if err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
@@ -76,8 +76,8 @@ func (a *userService) AuthLogin(userDto *dto.LoginRequestDto) response.ResponseA
 
 // SaveUser ...
 func (u *userService) SaveUser(user *models.User) response.Response {
-	user.LastUpdate = time.Now()
-	// brand.LastUpdateBy = dto.CurrUser
+	user.UpdateAt = time.Now()
+	user.LastLogin = time.Now()
 
 	res := u.Repository.SaveUser(*user)
 
@@ -86,8 +86,8 @@ func (u *userService) SaveUser(user *models.User) response.Response {
 
 // UpdateUser ...
 func (u *userService) UpdateUser(user *models.User) response.Response {
-	user.LastUpdate = time.Now()
-	// user.LastUpdateBy = dto.CurrUser
+	user.UpdateAt = time.Now()
+	user.LastLogin = time.Now()
 
 	res := u.Repository.UpdateUser(*user)
 
@@ -95,7 +95,7 @@ func (u *userService) UpdateUser(user *models.User) response.Response {
 }
 
 // GetUserByID ...
-func (u *userService) GetUserByID(ID int64) response.ResponseApi {
+func (u *userService) GetUserByID(ID int) response.ResponseApi {
 	var res response.ResponseApi
 
 	data, err := u.Repository.List(models.User{
@@ -117,7 +117,7 @@ func (u *userService) GetUserByID(ID int64) response.ResponseApi {
 }
 
 // Delete ..
-func (u *userService) Delete(ID int64) response.Response {
+func (u *userService) Delete(ID int) response.Response {
 	var res response.Response
 
 	res = u.Repository.Delete(ID)

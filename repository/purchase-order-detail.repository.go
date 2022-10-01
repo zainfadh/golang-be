@@ -4,38 +4,37 @@ import (
 	"golang-be/models"
 	"golang-be/utils/constants"
 	"golang-be/utils/response"
-	"time"
 
 	"github.com/astaxie/beego/logs"
 	"gorm.io/gorm"
 )
 
 type (
-	itemRepository struct {
+	poDetailRepository struct {
 		DB *gorm.DB
 	}
 
-	ItemRepository interface {
-		SaveItem(item models.Item) response.Response
-		UpdateItem(item models.Item) response.Response
-		List(data models.Item) ([]models.Item, error)
+	PoDetailRepository interface {
+		SavePoDetail(poDetail models.PurchaseOrderDetail) response.Response
+		UpdatePoDetail(poDetail models.PurchaseOrderDetail) response.Response
+		List(data models.PurchaseOrderDetail) ([]models.PurchaseOrderDetail, error)
 		Delete(ID int) response.Response
 	}
 )
 
-// NewItemRepository ..
-func NewItemRepository(db *gorm.DB) *itemRepository {
-	return &itemRepository{
+// NewPoDetailRepository ..
+func NewPoDetailRepository(db *gorm.DB) *poDetailRepository {
+	return &poDetailRepository{
 		DB: db,
 	}
 }
 
-// SaveItem ...
-func (u *itemRepository) SaveItem(item models.Item) response.Response {
+// SavePoDetail ...
+func (u *poDetailRepository) SavePoDetail(poDetail models.PurchaseOrderDetail) response.Response {
 	db := u.DB.Debug()
 	var res response.Response
 
-	if r := db.Save(&item); r.Error != nil {
+	if r := db.Save(&poDetail); r.Error != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
 	}
@@ -46,24 +45,16 @@ func (u *itemRepository) SaveItem(item models.Item) response.Response {
 }
 
 // Update ...
-func (u *itemRepository) UpdateItem(item models.Item) response.Response {
+func (u *poDetailRepository) UpdatePoDetail(poDetail models.PurchaseOrderDetail) response.Response {
 	db := u.DB.Debug()
-
 	var res response.Response
-	var items models.Item
+	var poDetails models.PurchaseOrderDetail
 
-	err := db.Model(&models.Item{}).Where("id = ? ", item.ID).First(&items).Error
+	err := db.Model(&models.PurchaseOrderDetail{}).Where("id = ? ", poDetail.ID).First(&poDetails).Error
 	if err != nil {
 		res.ResponseCode = constants.ERROR_RC_511
 		res.ResponseDesc = constants.ERROR_RM_511
 	}
-
-	items.Name = item.Name
-	items.Description = item.Description
-	items.Cost = item.Cost
-	items.Price = item.Cost
-	item.LastUpdate = time.Now()
-	item.CreatedAt = time.Now()
 
 	res.ResponseCode = constants.ERROR_RC_200
 	res.ResponseDesc = constants.ERROR_RM_200
@@ -71,21 +62,21 @@ func (u *itemRepository) UpdateItem(item models.Item) response.Response {
 }
 
 // List ..
-func (u *itemRepository) List(data models.Item) ([]models.Item, error) {
+func (u *poDetailRepository) List(data models.PurchaseOrderDetail) ([]models.PurchaseOrderDetail, error) {
 	db := u.DB.Debug()
-	item := []models.Item{}
-	if err := db.Where("id = ?", &data.ID).Find(&item).Order("id ASC").Error; err != nil {
+	poDetail := []models.PurchaseOrderDetail{}
+	if err := db.Where("id = ?", &data.ID).Find(&poDetail).Order("id ASC").Error; err != nil {
 		logs.Error("Error List MitraSupplierPriceWholesaler", err)
-		return item, err
+		return poDetail, err
 	}
-	return item, nil
+	return poDetail, nil
 }
 
 // Delete ..
-func (u *itemRepository) Delete(ID int) response.Response {
+func (u *poDetailRepository) Delete(ID int) response.Response {
 	db := u.DB.Debug()
 	res := response.Response{}
-	data := models.Item{}
+	data := models.PurchaseOrderDetail{}
 
 	if err := db.Where("id = ?", ID).Delete(data).Error; err != nil {
 		res.ResponseCode = constants.ERROR_RC_511

@@ -19,8 +19,8 @@ type (
 	ItemService interface {
 		SaveItem(item *models.Item) response.Response
 		UpdateItem(item *models.Item) response.Response
-		GetItemByID(ID int64) response.ResponseApi
-		Delete(ID int64) response.Response
+		GetItemByID(ID int) response.ResponseApi
+		Delete(ID int) response.Response
 	}
 )
 
@@ -52,7 +52,7 @@ func (u *itemService) UpdateItem(item *models.Item) response.Response {
 }
 
 // GetItemByID ...
-func (u *itemService) GetItemByID(ID int64) response.ResponseApi {
+func (u *itemService) GetItemByID(ID int) response.ResponseApi {
 	var res response.ResponseApi
 
 	data, err := u.Repository.List(models.Item{
@@ -74,7 +74,7 @@ func (u *itemService) GetItemByID(ID int64) response.ResponseApi {
 }
 
 // Delete ..
-func (u *itemService) Delete(ID int64) response.Response {
+func (u *itemService) Delete(ID int) response.Response {
 	var res response.Response
 
 	res = u.Repository.Delete(ID)
